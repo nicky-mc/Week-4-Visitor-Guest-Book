@@ -22,3 +22,17 @@
 //        };
 
 //the listener
+
+//Feedback container
+//fetch the read endpoint to have acess rto the data
+//fetch url
+//parse the response into json
+//wrangle data, if necesary
+
+//I need to display data to page
+// DataTransfer.forEach((item)=> {
+//i need to create one DOM element per piece of data.
+//});
+// i need to assign the values to tthe text content property
+//   for the example , the text content property for a h1 will have a value of username from my database data
+// Ineed to individually append those elements to the DOM
