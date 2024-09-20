@@ -3,10 +3,10 @@
 /*media queries at least computer anmnd mobile */
 @media (max-width: 480px) {
   .header {
-    font-size: 1.5em;
+    font-size: 1rem;
   }
   h2 {
-    font-size: 1.2em;
+    font-size: 0.7rem;
   }
 }
 @media (min-width: 601px) and (max-width: 900px) {
