@@ -1,7 +1,7 @@
 /* css reset */
 /*@import url("https://cdn.jsdelivr.net/gh/jgthms/minireset.css@masterminireset.min.css");
 /*media queries at least computer anmnd mobile */
-@media (max-width: 600px) {
+@media (max-width: 480px) {
   .header {
     font-size: 1.5em;
   }
@@ -27,6 +27,7 @@
   img {
     width: 150px;
   }
+}
 body {
   font-family: Arial, sans-serif;
   line-height: 1.6;
