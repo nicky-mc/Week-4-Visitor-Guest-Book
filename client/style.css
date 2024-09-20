@@ -1,3 +1,16 @@
 /* css reset */
 
 /*media queries at least computer anmnd mobile */
+html {
+  background-color: dimgrey;
+}
+.button {
+  background-color: Transparent;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+}
+.main_header {
+  text-align: center;
+}

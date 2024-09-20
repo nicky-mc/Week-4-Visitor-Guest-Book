@@ -36,3 +36,10 @@
 // i need to assign the values to tthe text content property
 //   for the example , the text content property for a h1 will have a value of username from my database data
 // Ineed to individually append those elements to the DOM
+// fixing textarea box size //! from stackoverflow
+const textarea = document.getElementById("textarea");
+const heightLimit = 500;
+textarea.oninput = function () {
+  textarea.style.height = "";
+  textarea.style.height = Math.min(textarea.scrollHeight, heightLimit) + px;
+};

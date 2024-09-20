@@ -1,17 +1,109 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
     <meta charset="UTF-8" />
-    l
-    <link rel="icon" type="image/x-icon" href="./favicon-16x16.png" />
+    <link rel="icon" href="./favicon-16x16.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./style.css" />
     <title>Gästebuch</title>
   </head>
   <body>
-    <!--we nned a form in here to COllect user data -->
-    <!-- ! remember name attribute -->
-    <!-- we need a container to display user feedback -->
+    <header>
+      <div class="main_header">
+        <h1>Gästebuch</h1>
+      </div>
+      <div id="header_pictures" class="header_pics">
+        <img
+          src="./public/san_fran.jpeg"
+          alt="picture of San francisco"
+          class="san_fran"
+        />
+        <img
+          src="./public/oberbaum_bridge.jpeg"
+          alt="a picture of the Oberbaum bridge in berlin"
+          class="oberbaum"
+        />
+        <img
+          src="./public/windy_welly.jpeg"
+          alt="a picture of Wellington New Zealand"
+          height="183px"
+          class="windy_welly"
+        />
+      </div>
+    </header>
+    <main>
+      <!--we nned a form in here to Collect user data -->
+      <!-- ! remember name attribute -->
+      <!-- we need a container to display user feedback -->
+      <h1>Please take the time to sign my guest book</h1>
+      <form id="form">
+        <div id="vistor_data" class="visitorData">
+          <label for="visitor_name">Enter your Name</label>
+          <input
+            type="text"
+            id="visitor_name"
+            name="visitor_name"
+            placeholder="enter name here"
+            maxlength="70"
+            minlength="3"
+            required="required"
+          /><label for="location">Where are you from</label>
+          <input
+            type="text"
+            id="location"
+            name="location"
+            placeholder="Enter your home town"
+            maxlength="35"
+            minlength="3"
+            required="required"
+          />
+          <br />
+          <label for="favouite_city"
+            >What is your favouite city to visit?</label
+          >
+          <input
+            type="text"
+            id="favouite_city"
+            name="favouite_city"
+            placeholder="enter city name here"
+            maxlength="35"
+            minlength="3"
+            required="required"
+          />
+          <br />
+          <label for="textarea">What do you love about it?</label>
+          <textarea
+            id="textarea"
+            name="textarea"
+            placeholder="enter why you love it here"
+            maxlength="500"
+            minlength="25"
+            required="required"
+          ></textarea>
+          <br />
+          <label for="photo">Upload a pic if you like</label><br />
+          <input type="file" id="photo" name="photo[]" />
+        </div>
+
+        <button data-hf-event="prev_step" type="button" style="display: none">
+          Previous step
+        </button>
+        <button data-hf-event="next_step" type="button" style="display: none">
+          Next step
+        </button>
+
+        <button class="button" type="submit">
+          <img
+            src="./public/png-transparent-tiger-new-york-city-business-china-sport-submit-button-blue-animals-text-removebg-preview.png"
+            alt="blue submit button"
+            width="100px"
+          />
+        </button>
+      </form>
+      <br />
+      <div id="guestBookContainer" class="guestContainer"></div>
+    </main>
+    <footer><small> created by Nicky Mortoza-Cowles 2024 </small></footer>
   </body>
   <script type="module" src="./Gästebuch.js"></script>
 </html>
