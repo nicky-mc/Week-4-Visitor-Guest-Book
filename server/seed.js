@@ -2,3 +2,4 @@
 // look at https://dummyjson.com/
 //
 // minimum one table to store the form data,
+import { db } from "./server.js";
