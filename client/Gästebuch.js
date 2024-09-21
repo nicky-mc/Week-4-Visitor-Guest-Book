@@ -5,7 +5,7 @@ function init() {
   const guestBookContainer = document.getElementById("guestBookContainer");
   const textarea = document.getElementById("textarea");
   const heightLimit = 500;
-  const serverURL = "http://localhost:8080/feedback"; // Update to your live server URL if needed
+  const serverURL = "https://week-4-visitor-guest-book.onrender.com/"; // Update to your live server URL if needed
 
   // Adjust textarea height dynamically
   textarea.oninput = () => {
@@ -29,14 +29,14 @@ function init() {
       });
 
       if (response.ok) {
-        console.log("Feedback submitted successfully");
+        console.log("igot ya deets choom");
         fetchFeedback(); // Refresh feedback display after submission
         form.reset(); // Reset form fields
       } else {
-        console.error("Failed to submit feedback:", response.statusText);
+        console.error("Oh Choom this is not preem:", response.statusText);
       }
     } catch (error) {
-      console.error("Error submitting form:", error.message);
+      console.error("Error the form delta'd out of here:", error.message);
     }
   });
 
@@ -47,6 +47,7 @@ function init() {
       if (response.ok) {
         const feedbackData = await response.json();
         guestBookContainer.innerHTML = ""; // Clear existing feedback
+        console.log("Check ya deets choom!:", feedbackData);
 
         feedbackData.forEach((feedback) => {
           const feedbackElement = document.createElement("div");
