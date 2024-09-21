@@ -1,48 +1,44 @@
-const form = document.getElementById("form");
-const guestBookContainer = document.getElementById("guestBookContainer");
-const textarea = document.getElementById("textarea");
-const heightLimit = 500;
+document.addEventListener("DOMContentLoaded", init);
+function init() {
+  const form = document.getElementById("form");
+  const guestBookContainer = document.getElementById("guestBookContainer");
+  const textarea = document.getElementById("textarea");
+  const heightLimit = 500;
+  //const serverURL = "https://week-4-visitor-guest-book.onrender.com/"; // Live server URL
 
-// Use your server's live URL
-const serverURL = "https://localhost:8080/feedback";
+  // Adjust textarea height dynamically
+  textarea.oninput = () => {
+    textarea.style.height = "auto"; // Reset height
+    textarea.style.height = Math.min(textarea.scrollHeight, heightLimit) + "px";
+  };
 
-textarea.oninput = function () {
-  textarea.style.height = "auto"; // Reset height
-  textarea.style.height = Math.min(textarea.scrollHeight, heightLimit) + "px";
-};
-
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const formData = new FormData(form);
-  const formObject = Object.fromEntries(formData);
-
-  const response = await fetch(serverURL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(formObject),
+  // Form submission event
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault(); // Prevent default form submission
+    const formData = new FormData(form);
+    const formValues = Object.fromEntries(formData);
+    fetch("http://localhost:8080/feedback", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formValues),
+    });
   });
 
-  const data = await response.json();
-  console.log(data);
-});
-
-// Fetch the read endpoint to have access to the data
-async function guestBookContainer() {
-  const response = await fetch(serverURL);
-  const data = await response.json();
-  console.log(data);
-
-  data.forEach((item) => {
-    const guestBookItem = document.createElement("div");
-    guestBookItem.className = "guestBookItem";
-    guestBookItem.innerHTML = `
-      <h3>${item.visitor_name}</h3>
-      <p>${item.location}</p>
-      <p>${item.favourite_city}</p>
-      <p>${item.feedback}</p>`;
-    guestBookContainer.appendChild(guestBookItem);
-  });
+  // Function to display feedback
+  async function fetchFeedback() {
+    const response = await fetch("http://localhost:8080/feedback");
+    const feedbackData = await response.json();
+    feedbackData.forEach((feedback) => {
+      const feedbackElement = document.createElement("div");
+      feedbackElement.innerHTML = `
+        <h2>${feedback.visitor_name}</h2>
+        <p>${feedback.location}</p>
+        <p>${feedback.favourite_city}</p>
+        <p>${feedback.feedback}</p>
+      `;
+      guestBookContainer.appendChild(feedbackElement);
+    });
+  }
 }
-fetch(serverURL);

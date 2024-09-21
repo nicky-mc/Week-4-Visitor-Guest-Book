@@ -16,27 +16,26 @@ export const db = new pg.Pool({
 });
 
 app.listen(8080, () => {
-  console.log(
-    `Server running on port 8080 where we are going we don"t need roads`
-  );
+  console.log("Server running on port 8080");
 });
-
 app.get("/", (req, res) => {
-  res.json({ message: "we built this server on ROCK N ROLL!!!" });
+  res.json({ message: "We built this server on ROCK N ROLL!!!" });
 });
 
-app.use(express.json());
-
-//you need two routes minimum
-//you need a route to READ the database data
+// Route to READ data from the database
 app.get("/feedback", async (req, res) => {
-  try {
-    const { visitor_name, location, favourite_city, feedback } = req.body;
-    const insertQuery = `INSERT INTO feedback (visitor_name, location, favourite_city, feedback) VALUES ($1, $2, $3, $4) RETURNING *`;
-    const values = [visitor_name, location, favourite_city, feedback];
-    const result = await db.query(insertQuery, values);
-    res.json({ status: "gee whiz buddy, phew that was a close one" });
-  } catch (error) {
-    console.error("Darn it buddy it fell through", error.message);
-  }
+  db.query("SELECT * FROM feedback").then((result) => res.json(result.rows));
+});
+
+// Route to CREATE new feedback in the database
+app.post("/feedback", async (req, res) => {
+  const { visitor_name, location, favourite_city, feedback } = req.body;
+  const insertQuery = `
+    INSERT INTO feedback (visitor_name, location, favourite_city, feedback)
+    VALUES ($1, $2, $3, $4)
+    RETURNING *;
+  `;
+  const values = [visitor_name, location, favourite_city, feedback];
+
+  db.query(insertQuery, values).then((result) => res.json(result.rows[0]));
 });
