@@ -8,9 +8,9 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(cors(corsOptions));
-const corsOptions = { origin: "https:visitor-guest-book-1.onrender.com" };
 
+const corsOptions = { origin: "https:visitor-guest-book-1.onrender.com" };
+app.use(cors(corsOptions));
 const dbConnectionString = process.env.DATABASE_URL;
 
 export const db = new pg.Pool({
