@@ -30,20 +30,28 @@ app.get("/feedback", async (req, res) => {
     const result = await db.query("SELECT * FROM feedback");
     res.json(result.rows);
   } catch (error) {
-    console.error("Error fetching feedback:", error.message); // Log the error to the console
+    console.error("Error fetching feedback:", error.message); // Log the error
     res.status(500).json({ error: "Internal Server Error" }); // Respond with a 500 status
   }
 });
 
 // Route to CREATE new feedback in the database
 app.post("/feedback", async (req, res) => {
-  const { visitor_name, location, favourite_city, feedback } = req.body; // Correctly access req.body
+  const { visitor_name, location, favourite_city, feedback } = req.body;
+
+  // Validate input data
+  if (!visitor_name || !location || !favourite_city || !feedback) {
+    return res.status(400).json({ error: "All fields are required." });
+  }
+
   const insertQuery = `
     INSERT INTO feedback (visitor_name, location, favourite_city, feedback)
     VALUES ($1, $2, $3, $4)
     RETURNING *;
   `;
   const values = [visitor_name, location, favourite_city, feedback];
+
+  console.log("Inserting feedback with values:", values); // Log values being inserted
 
   try {
     const result = await db.query(insertQuery, values);
