@@ -65,7 +65,7 @@ form.addEventListener("submit", async (event) => {
   console.log(data);
   displayFeedback();
 });
-//this function will display the feedback on the page
+
 async function displayFeedback() {
   const response = await fetch(
     "https://week-4-visitor-guest-book.onrender.com/getFeedback"
@@ -83,6 +83,6 @@ async function displayFeedback() {
     guestBookContainer.appendChild(entryDiv);
   });
 }
-//this will display the feedback on the page
+
 displayFeedback();
-// fetch the read endpoint to have access to the data
+//this will display the feedback on the page
