@@ -1,5 +1,5 @@
 // this imports our modules and sets up our database connection and pg pool
-import express from "express";
+import express, { request, response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import pg from "pg";
@@ -8,15 +8,9 @@ export const db = new pg.Pool({
   connectionString: dbConnectionString,
 });
 
-// initialise express
 const app = express();
-// configure dotenv
-dotenv.config();
-//tell express app to use json
-// tell express to use cors
 app.use(express.json());
 app.use(cors());
-// need to set up port for app to listen
 const port = 8080;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
@@ -26,14 +20,23 @@ app.get("/", (_request, response) => {
     "Our server is running on localhost 8080, and we built it on Rock N Roll"
   );
 });
-// I need to set up a port using the connection string using the .env file
-
-// and need to set up a root route
-
-// you need two routews minimum
-// you need  ROUTE TO READ THE DATA BASE QUERY
-// you need to route to create ot add new data to the database
-// ! in your create route the request.body is an object that represents the form data coming from your client
-// you need to use sql queries and parameters in these routes
-
-//! in .env you need your database connection string with the correct password
+app.get("/getFeedback", async (request, response) => {
+  try {
+    const result = await db.query("SELECT * FROM feedback");
+    response.json(result.rows);
+  } catch (error) {
+    response.status(500).json({ error: error.message });
+  }
+});
+app.post("/addFeedback", async (request, response) => {
+  const { visitor_name, location, favourite_city, feedback } = request.body;
+  try {
+    const result = await db.query(
+      "INSERT INTO FEEDBACK (visitor_name, location, favourite_city, feedback) VALUES ($1, $2, $3, $4) RETURNING *",
+      [visitor_name, location, favourite_city, feedback]
+    );
+    response.status(201).json(result.rows[0]);
+  } catch (error) {
+    response.status(500).json({ error: error.message });
+  }
+});
