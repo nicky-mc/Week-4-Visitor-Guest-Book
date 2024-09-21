@@ -31,8 +31,8 @@ app.get("/feedback", async (req, res) => {
     const result = await db.query("SELECT * FROM feedback");
     res.json(result.rows);
   } catch (error) {
-    console.error("Error fetching feedback:", error.message);
-    res.status(500).json({ error: error.message });
+    console.error("Error fetching feedback:", error.message); // Log the error to the console
+    res.status(500).json({ error: "Internal Server Error" }); // Respond with a 500 status
   }
 });
 
@@ -41,6 +41,7 @@ const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
 app.get("/", (req, res) => {
   res.json({ message: "We built this server on ROCK N ROLL!!!" });
 });
