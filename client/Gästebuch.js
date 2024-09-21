@@ -20,7 +20,7 @@ function init() {
     const formValues = Object.fromEntries(formData.entries()); // Ensure entries() is called
 
     try {
-      const response = await fetch(`${serverURL}/feedback`, {
+      const response = await fetch(`${serverURL}feedback`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,7 +43,7 @@ function init() {
   // Function to display feedback
   async function fetchFeedback() {
     try {
-      const response = await fetch(`${serverURL}/feedback`);
+      const response = await fetch(`${serverURL}feedback`);
       if (response.ok) {
         const feedbackData = await response.json();
         guestBookContainer.innerHTML = ""; // Clear existing feedback
