@@ -4,14 +4,9 @@
 // minimum one table to store the form data,
 import { db } from "./server.js";
 
-db.query(`
-      CREATE TABLE IF NOT EXISTS feedback (
-        id SERIAL PRIMARY KEY,
-        visitor_name VARCHAR(70),
-        location VARCHAR(30),
-        favourite_city VARCHAR(30),
-        feedback TEXT
-      );
+db.query(`CREATE TABLE IF NOT EXISTS feedback (id SERIAL PRIMARY KEY,visitor_name VARCHAR(70),
+    location   VARCHAR(30), favourite_city VARCHAR(30),
+        feedback TEXT NOT NULL);
     `);
 
 // Insert dummy data
