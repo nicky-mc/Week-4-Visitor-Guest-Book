@@ -8,7 +8,10 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cors());
-
+const corsOptions = {
+  origin: "https://week-4-visitor-guest-book-1.onrender.com", // Allow only your frontend
+  optionsSuccessStatus: 200, // For legacy browser support
+};
 const dbConnectionString = process.env.DATABASE_URL;
 
 export const db = new pg.Pool({
