@@ -7,6 +7,7 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 const corsOptions = { origin: "https:visitor-guest-book-1.onrender.com" };
