@@ -7,19 +7,39 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors());
 
-const corsOptions = { origin: "https:visitor-guest-book-1.onrender.com" };
+// CORS configuration
+const corsOptions = {
+  origin: "https://week-4-visitor-guest-book-1.onrender.com", // Your frontend origin
+  optionsSuccessStatus: 200, // For legacy browser support
+};
+
+// Use CORS middleware
 app.use(cors(corsOptions));
+
+// Database connection
 const dbConnectionString = process.env.DATABASE_URL;
 
 export const db = new pg.Pool({
   connectionString: dbConnectionString,
+  ssl: { rejectUnauthorized: false }, // Required for many cloud services
 });
 
-app.listen(8080, () => {
-  console.log("Server running on port 8080");
+// Define your routes
+app.get("/feedback", async (req, res) => {
+  try {
+    const result = await db.query("SELECT * FROM feedback");
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching feedback:", error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Start the server
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 app.get("/", (req, res) => {
   res.json({ message: "We built this server on ROCK N ROLL!!!" });
