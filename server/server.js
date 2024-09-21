@@ -2,48 +2,41 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import pg from "pg";
+
 dotenv.config();
 
-const dbConnectionString = process.env.DATABASE_URL;
-const db = new pg.Pool({
-  connectionString: dbConnectionString,
-});
-
-// initialise express
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-const port = 8080;
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+const dbConnectionString = process.env.DATABASE_URL;
+
+export const db = new pg.Pool({
+  connectionString: dbConnectionString,
 });
 
-app.get("/", (_request, response) => {
-  response.json(
-    "Our server is running on localhost 8080, and we built it on Rock N Roll"
+app.listen(8080, () => {
+  console.log(
+    `Server running on port 8080 where we are going we don"t need roads`
   );
 });
 
-app.get("/getFeedback", async (_request, response) => {
-  try {
-    const result = await db.query("SELECT * FROM feedback");
-    response.json(result.rows);
-  } catch (error) {
-    response.status(500).json({ error: error.message });
-  }
+app.get("/", (req, res) => {
+  res.json({ message: "we built this server on ROCK N ROLL!!!" });
 });
 
-app.post("/addFeedback", async (request, response) => {
-  const { visitor_name, location, favourite_city, feedback } = request.body;
+app.use(express.json());
 
+//you need two routes minimum
+//you need a route to READ the database data
+app.get("/feedback", async (req, res) => {
   try {
-    const result = await db.query(
-      "INSERT INTO feedback (visitor_name, location, favourite_city, feedback) VALUES ($1, $2, $3, $4) RETURNING *",
-      [visitor_name, location, favourite_city, feedback]
-    );
-    response.status(201).json(result.rows[0]);
+    const { visitor_name, location, favourite_city, feedback } = req.body;
+    const insertQuery = `INSERT INTO feedback (visitor_name, location, favourite_city, feedback) VALUES ($1, $2, $3, $4) RETURNING *`;
+    const values = [visitor_name, location, favourite_city, feedback];
+    const result = await db.query(insertQuery, values);
+    res.json({ status: "gee whiz buddy, phew that was a close one" });
   } catch (error) {
-    response.status(500).json({ error: error.message });
+    console.error("Darn it buddy it fell through", error.message);
   }
 });
