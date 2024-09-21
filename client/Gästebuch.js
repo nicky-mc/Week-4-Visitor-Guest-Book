@@ -29,7 +29,7 @@ function init() {
       });
 
       if (response.ok) {
-        console.log("igot ya deets choom");
+        console.log("I got ya deets choom");
         fetchFeedback(); // Refresh feedback display after submission
         form.reset(); // Reset form fields
       } else {
