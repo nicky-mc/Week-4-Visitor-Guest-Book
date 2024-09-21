@@ -19,13 +19,12 @@ app.use(cors(corsOptions));
 
 // Database connection
 const dbConnectionString = process.env.DATABASE_URL;
-
 export const db = new pg.Pool({
   connectionString: dbConnectionString,
   ssl: { rejectUnauthorized: false }, // Required for many cloud services
 });
 
-// Define your routes
+// Route to READ data from the database
 app.get("/feedback", async (req, res) => {
   try {
     const result = await db.query("SELECT * FROM feedback");
@@ -36,24 +35,9 @@ app.get("/feedback", async (req, res) => {
   }
 });
 
-// Start the server
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-
-app.get("/", (req, res) => {
-  res.json({ message: "We built this server on ROCK N ROLL!!!" });
-});
-
-// Route to READ data from the database
-app.get("/feedback", async (req, res) => {
-  db.query("SELECT * FROM feedback").then((result) => res.json(result.rows));
-});
-
 // Route to CREATE new feedback in the database
 app.post("/feedback", async (req, res) => {
-  const { visitor_name, location, favourite_city, feedback } = req.body;
+  const { visitor_name, location, favourite_city, feedback } = req.body; // Correctly access req.body
   const insertQuery = `
     INSERT INTO feedback (visitor_name, location, favourite_city, feedback)
     VALUES ($1, $2, $3, $4)
@@ -61,5 +45,22 @@ app.post("/feedback", async (req, res) => {
   `;
   const values = [visitor_name, location, favourite_city, feedback];
 
-  db.query(insertQuery, values).then((result) => res.json(result.rows[0]));
+  try {
+    const result = await db.query(insertQuery, values);
+    res.json(result.rows[0]); // Respond with the newly created feedback entry
+  } catch (error) {
+    console.error("Error inserting feedback:", error.message); // Log the error
+    res.status(500).json({ error: "Internal Server Error" }); // Respond with a 500 status
+  }
+});
+
+// Initial route for testing the server
+app.get("/", (req, res) => {
+  res.json({ message: "We built this server on ROCK N ROLL!!!" });
+});
+
+// Start the server
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

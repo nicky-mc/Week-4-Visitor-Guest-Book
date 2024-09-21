@@ -5,7 +5,7 @@ function init() {
   const guestBookContainer = document.getElementById("guestBookContainer");
   const textarea = document.getElementById("textarea");
   const heightLimit = 500;
-  const serverURL = "https://week-4-visitor-guest-book.onrender.com/"; // Update to your live server URL if needed
+  const serverURL = "https://week-4-visitor-guest-book.onrender.com/";
 
   // Adjust textarea height dynamically
   textarea.oninput = () => {
