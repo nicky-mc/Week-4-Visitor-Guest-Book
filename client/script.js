@@ -1,48 +1,53 @@
 const comment = document.getElementById("textarea");
 const heightLimit = 500;
+
 comment.oninput = function () {
   comment.style.height = "";
   comment.style.height = Math.min(comment.scrollHeight, heightLimit) + "px";
 };
 
 async function getFeedbackFromDB() {
-  const response = await fetch(
-    "https://week-4-visitor-guest-book.onrender.com/Feedback"
-  );
-
+  const response = await fetch("/api/feedback"); // Fetching feedback from server
   const data = await response.json();
   return data;
 }
 
 function handleSubmit(event) {
-  event.preventDefault();
+  event.preventDefault(); // Prevent the default form submission
 
   const form = document.querySelector("#form-container");
   const formData = new FormData(form);
-  const formValues = Object.fromEntries(formData);
+  const formValues = Object.fromEntries(formData); // Convert FormData to a plain object
 
-  fetch("https://week-4-visitor-guest-book.onrender.com/addFeedback", {
+  fetch("/api/addFeedback", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ formValues }),
+    body: JSON.stringify(formValues), // Send data as JSON
+  }).then(() => {
+    form.reset(); // Reset the form after submission
+    getFeedbackFromDB().then(displayFeedback); // Reload feedback after submission
   });
-  form.reset();
 }
 
-async function main() {
-  const fb = await getFeedbackFromDB();
-
-  fb.forEach(function (entry) {
-    const feedbackContainer = document.querySelector("#innerFB");
+function displayFeedback(feedbackList) {
+  const feedbackContainer = document.querySelector("#innerFB");
+  feedbackContainer.innerHTML = ""; // Clear existing feedback
+  feedbackList.forEach((entry) => {
     const feedback = document.createElement("div");
     feedback.className = "indFB";
     feedback.textContent = `Visitor Name: ${entry.visitor_name} | Location: ${entry.location} | Favourite City: ${entry.favourite_city} | Feedback: ${entry.feedback}`;
+    feedbackContainer.appendChild(feedback);
   });
+}
 
+async function main() {
+  const fb = await getFeedbackFromDB(); // Get feedback when the page loads
+  displayFeedback(fb);
   document
     .querySelector("#form-container")
-    .addEventListener("submit", handleSubmit);
+    .addEventListener("submit", handleSubmit); // Attach event listener
 }
+
 main();

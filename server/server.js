@@ -1,51 +1,48 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import pg from "pg";
-import path from "path"; // Import path module
+import { Pool } from "pg"; // Import Pool from pg
 
-dotenv.config();
+dotenv.config(); // Load environment variables from .env
 
 const app = express();
-app.use(express.json());
+app.use(cors()); // Enable CORS for all routes
+app.use(express.json()); // Parse JSON request bodies
 
-// Set CORS options
-const corsOptions = {
-  origin: "https://week4-assignment-guestbook-1.onrender.com", // Your frontend origin
-  optionsSuccessStatus: 200, // For legacy browser support
-};
+// PostgreSQL connection pool
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL, // Make sure this is set in your .env file
+});
 
-app.use(cors(corsOptions));
-
-export const dbConnectionString = process.env.DATABASE_URL;
-
-// Existing GET and POST routes
-app.get("/feedback", async function (req, res) {
+// Endpoint to get feedback
+app.get("/api/feedback", async (req, res) => {
   try {
-    const queryResponse = await db.query("SELECT * FROM feedback");
-    res.json(queryResponse.rows);
+    const result = await pool.query("SELECT * FROM feedback");
+    res.json(result.rows); // Send feedback data as JSON
   } catch (error) {
     console.error("Error fetching feedback:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
-app.post("/addFeedback", async function (req, res) {
+// Endpoint to add feedback
+app.post("/api/addFeedback", async (req, res) => {
+  const { visitor_name, location, favourite_city, feedback } = req.body; // Extract feedback data from request
+
   try {
-    const { visitor_name, location, favourite_city, feedback } =
-      req.body.formValues;
-    await db.query(
-      `INSERT INTO feedback (visitor_name, location, favourite_city, feedback) VALUES ($1,$2,$3,$4)`,
+    await pool.query(
+      `INSERT INTO feedback (visitor_name, location, favourite_city, feedback) VALUES ($1, $2, $3, $4)`,
       [visitor_name, location, favourite_city, feedback]
     );
-    res.json({ message: "Feedback added successfully" });
+    res.json({ message: "Feedback added successfully" }); // Respond with success message
   } catch (error) {
     console.error("Error adding feedback:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, function () {
+// Start the server
+const PORT = process.env.PORT || 10000; // Use specified port or fallback to 10000
+app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
