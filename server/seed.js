@@ -8,7 +8,7 @@ db.query(
     visitor_name VARCHAR(70),
     location VARCHAR(30),
     favourite_city VARCHAR(30),
-    feedback TEXT NOT NULL,
+    feedback TEXT,
     likes INT DEFAULT 0
   );
 `
