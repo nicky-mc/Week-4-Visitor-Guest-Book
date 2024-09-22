@@ -46,7 +46,7 @@ app.get("/", (_req, res) => {
     "Our server is running on localhost 8080, and we built it on Rock N Roll"
   );
 });
-app.get("/getFeedback", async (_req, res) => {
+app.get("/", async (_req, res) => {
   try {
     const result = await db.query("SELECT * FROM feedback");
     res.json(result.rows);

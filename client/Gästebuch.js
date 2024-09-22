@@ -1,108 +1,135 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Constants
+  const API_BASE_URL = "https://week-4-visitor-guest-book.onrender.com";
+  const API_ENDPOINTS = {
+    GET_FEEDBACK: `${API_BASE_URL}/`,
+    POST_FEEDBACK: `${API_BASE_URL}/addFeedback/`,
+    LIKE_FEEDBACK: `${API_BASE_URL}/addFeedback/`,
+    DELETE_FEEDBACK: (id) => `${API_BASE_URL}/${id}`,
+  };
+
+  // DOM Elements
   const guestBookContainer = document.getElementById("guestBookContainer");
   const form = document.getElementById("form");
-  const dataUrl = "https://week-4-visitor-guest-book.onrender.com/getFeedback";
-  const postUrl = "https://week-4-visitor-guest-book.onrender.com/addFeedback";
 
-  async function fetchFeedback() {
-    try {
-      const response = await fetch(dataUrl);
-      if (!response.ok) {
-        throw new Error("Network response was not ok: " + response.statusText);
-      }
-      const feedbackData = await response.json();
-      guestBookContainer.innerHTML = "";
-      feedbackData.forEach((feedback) => {
-        const feedbackElement = document.createElement("div");
-        feedbackElement.setAttribute("data-id", feedback.id);
-
-        feedbackElement.innerHTML = `
+  // Helper Functions
+  const createFeedbackElement = (feedback) => {
+    const element = document.createElement("div");
+    element.setAttribute("data-id", feedback.id);
+    element.innerHTML = `
       <h2>${feedback.visitor_name}</h2>
       <p>${feedback.location}</p>
       <p>${feedback.favourite_city}</p>
       <p>${feedback.feedback}</p>
-      <p>Likes: <span id="likes-${feedback.id}">${
-          feedback.likes || 0
-        }</span></p><button class="like-button">Like</button>
-      <button class="delete-button">Delete</button>`;
-        guestBookContainer.appendChild(feedbackElement);
+      <p>Likes: <span id="likes-${feedback.id}">${feedback.likes || 0}</p>
+      <button class="like-button">Like</button>
+      <button class="delete-button">Delete</button>
+    `;
+    return element;
+  };
+
+  const handleApiError = (error, message) => {
+    console.error(`${message}:`, error);
+    // You could add user-friendly error handling here, e.g., displaying an error message to the user
+  };
+
+  // API Functions
+  const fetchFeedback = async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.GET_FEEDBACK);
+      if (!response.ok)
+        throw new Error(`HTTP error! status: ${response.status}`);
+      const feedbackData = await response.json();
+
+      guestBookContainer.innerHTML = "";
+      feedbackData.forEach((feedback) => {
+        guestBookContainer.appendChild(createFeedbackElement(feedback));
       });
+
       attachButtonListeners();
     } catch (error) {
-      console.error("Error fetching feedback:", error);
+      handleApiError(error, "Error fetching feedback");
     }
-  }
-  function attachButtonListeners() {
-    document.querySelector(".like-button").forEach((button) => {
-      button.addEventListener("click", async (event) => {
-        const feedbackId = event.target.closest("div").getAttribute("data-id");
-        try {
-          const response = await fetch(dataUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ id: feedbackId }),
-          });
-          if (response.ok) {
-            const updatedFeedback = await response.json();
-            document.getElementById(`likes-${updatedFeedback.id}`).innerText =
-              updatedFeedback.likes; // Update likes count
-          } else {
-            console.error("Error liking feedback:", response.statusText);
-          }
-        } catch (error) {
-          console.error("Error liking feedback:", error);
-        }
-      });
-    });
-    document.querySelectorAll(".delete-button").forEach((button) => {
-      button.addEventListener("click", async (event) => {
-        const feedbackId = event.target.closest("div").getAttribute("data-id");
-        try {
-          const response = await fetch(`${dataUrl}/${feedbackId}`, {
-            method: "DELETE",
-          });
-          if (response.ok) {
-            fetchFeedback(); // Refresh feedback list after deletion
-          } else {
-            console.error("Error deleting feedback:", response.statusText);
-          }
-        } catch (error) {
-          console.error("Error deleting feedback:", error);
-        }
-      });
-    });
-  }
+  };
 
-  fetchFeedback();
-  form.addEventListener("submit", async (event) => {
+  const submitFeedback = async (formData) => {
+    try {
+      const response = await fetch(API_ENDPOINTS.POST_FEEDBACK, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok)
+        throw new Error(`HTTP error! status: ${response.status}`);
+      await fetchFeedback();
+    } catch (error) {
+      handleApiError(error, "Error submitting feedback");
+    }
+  };
+
+  const likeFeedback = async (feedbackId) => {
+    try {
+      const response = await fetch(API_ENDPOINTS.LIKE_FEEDBACK, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: feedbackId }),
+      });
+      if (!response.ok)
+        throw new Error(`HTTP error! status: ${response.status}`);
+      const updatedFeedback = await response.json();
+      document.getElementById(`likes-${updatedFeedback.id}`).innerText =
+        updatedFeedback.likes;
+    } catch (error) {
+      handleApiError(error, "Error liking feedback");
+    }
+  };
+
+  const deleteFeedback = async (feedbackId) => {
+    try {
+      const response = await fetch(API_ENDPOINTS.DELETE_FEEDBACK(feedbackId), {
+        method: "DELETE",
+      });
+      if (!response.ok)
+        throw new Error(`HTTP error! status: ${response.status}`);
+      await fetchFeedback();
+    } catch (error) {
+      handleApiError(error, "Error deleting feedback");
+    }
+  };
+
+  // Event Listeners
+  const attachButtonListeners = () => {
+    document.querySelectorAll(".like-button").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        const feedbackId = event.target.closest("div").getAttribute("data-id");
+        likeFeedback(feedbackId);
+      });
+    });
+
+    document.querySelectorAll(".delete-button").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        const feedbackId = event.target.closest("div").getAttribute("data-id");
+        deleteFeedback(feedbackId);
+      });
+    });
+  };
+
+  form.addEventListener("submit", (event) => {
     event.preventDefault();
     const formData = new FormData(form);
     const formValues = Object.fromEntries(formData);
-    visitor_name: formValues.visitor_name.trim();
-    location: formValues.location.trim();
-    favourite_city: formValues.favourite_city.trim();
-    feedback: formValues.feedback.trim();
+    const trimmedValues = Object.fromEntries(
+      Object.entries(formValues).map(([key, value]) => [key, value.trim()])
+    );
+
     if (!trimmedValues.visitor_name || !trimmedValues.feedback) {
       console.error("Visitor name and feedback are required!");
       return;
     }
-    try {
-      const response = await fetch(postUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formValues),
-      });
-      if (response.ok) {
-        fetchFeedback(); // Refresh the feedback list
-      } else {
-        console.error("Error submitting form:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-    }
+
+    submitFeedback(trimmedValues);
   });
+
+  // Initial fetch
+  fetchFeedback();
 });
