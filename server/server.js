@@ -3,66 +3,81 @@ import cors from "cors";
 import dotenv from "dotenv";
 import pg from "pg";
 
-const app = express();
-
-//config dotenv
 dotenv.config();
 
-//tell express app to use json
-//tell express app to use cors
+const app = express();
 app.use(express.json());
-app.use(cors());
+
+// CORS configuration
 const corsOptions = {
-  origin: "https://week4-assignment-guestbook-1.onrender.com", // Your frontend origin
-  optionsSuccessStatus: 200, // For legacy browser support
+  origin: "https://week-4-visitor-guest-book-1.onrender.com",
+  optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
 
-//setup database pool using the connection
+// Database connection
 const dbConnectionString = process.env.DATABASE_URL;
 export const db = new pg.Pool({
   connectionString: dbConnectionString,
 });
 
-//i need to set up root route
-app.get("/", (req, res) => {
-  res.json({ message: "I am ROOOOOOTTTT" });
+// Routes
+app.get("/", (_req, res) => {
+  res.json("Our server is running on localhost 8080");
 });
 
-app.get("/data", async (req, res) => {
-  // read from database and return array of feedbacks
-  const query = await db.query("SELECT * from messages ORDER BY id DESC");
-  return res.json(query.rows);
-});
-
-app.post("/feedback", async (req, res) => {
-  // save to database feedback sent from client
-  const bodyData = await req.body;
-
-  const feedbackData = bodyData.feedbackData;
-  // console.log("feedbackData", feedbackData);
-
-  const result = await db.query(`
-      INSERT INTO messages (name, location, favnumber, feedback)
-      VALUES ('${feedbackData.visitor_name}', '${feedbackData.location}', '${feedbackData.favourite_city}', '${feedbackData.feedback}')
-  `);
-
-  console.log("databse insert result", result);
-
-  if (result.rowCount === 1) {
-    res.json({
-      message: "feedback received",
-    });
-  } else {
-    res.json({
-      message: "Error saving feedback, please try again",
-    });
+app.get("/feedback", async (_req, res) => {
+  try {
+    const result = await db.query("SELECT * FROM feedback ORDER BY id DESC");
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error retrieving feedback:", error);
+    res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error.message });
   }
 });
 
-//setup a apart for my app to listen
-const PORT = 8080;
-app.listen(PORT, () => {
-  console.log(`My server is running on PORT: ${PORT}`);
+app.post("/addFeedback", async (req, res) => {
+  const { visitor_name, location, favourite_city, feedback } = req.body;
+
+  // Simple data wrangling and validation
+  const wrangle = (str) => (str ? str.trim().substring(0, 255) : null);
+
+  const wrangledData = {
+    visitor_name: wrangle(visitor_name),
+    location: wrangle(location),
+    favourite_city: wrangle(favourite_city),
+    feedback: wrangle(feedback),
+  };
+
+  // Ensure visitor_name is not null
+  if (!wrangledData.visitor_name) {
+    return res.status(400).json({ error: "Visitor name is required" });
+  }
+
+  try {
+    const result = await db.query(
+      "INSERT INTO feedback (visitor_name, location, favourite_city, feedback) VALUES ($1, $2, $3, $4) RETURNING *",
+      [
+        wrangledData.visitor_name,
+        wrangledData.location,
+        wrangledData.favourite_city,
+        wrangledData.feedback,
+      ]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error("Error inserting feedback:", error);
+    res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error.message });
+  }
+});
+
+// Start the server
+const port = process.env.PORT || 8080;
+app.listen(port, () => {
+  console.log(`Server is running on PORT: ${port}`);
 });
