@@ -1,87 +1,40 @@
-function updateFeedbackDisplay(feedback) {
-  // Create a new div element to hold the feedback
-  const feedbackElement = document.createElement("div");
-  feedbackElement.className = "feedback-item";
-  feedbackElement.setAttribute("data-id", feedback.id);
-
-  // Populate the div with feedback information
-  feedbackElement.innerHTML = `
-    <h3>${feedback.visitor_name}</h3>
-    <p><strong>Location:</strong> ${feedback.location}</p>
-    <p><strong>Favorite City:</strong> ${feedback.favourite_city}</p>
-    <p><strong>Feedback:</strong> ${feedback.feedback}</p>
-    <p><small>Posted on: ${new Date(
-      feedback.timestamp
-    ).toLocaleString()}</small></p>
-  `;
-
-  // Add the new feedback to the guestbook container
-  const guestBookContainer = document.getElementById("guestBookContainer");
-  guestBookContainer.prepend(feedbackElement);
+async function getFeedbackFromDB() {
+  const response = await fetch(
+    "https://week-4-visitor-guest-book.onrender.com"
+  );
+  const data = await response.json();
+  return data;
 }
 
-// Make sure this is within your DOMContentLoaded event listener
-document.addEventListener("DOMContentLoaded", () => {
-  const API_URL = "https://week-4-visitor-guest-book.onrender.com/addFeedback/";
-  const form = document.getElementById("feedbackForm");
+function handleSubmit(event) {
+  event.preventDefault();
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
+  const form = document.querySelector("#form-container");
+  const formData = new FormData(form);
+  const formValues = Object.fromEntries(formData);
 
-    // Gather and format the data
-    const formData = new FormData(form);
-    const feedbackData = {
-      visitor_name: formData.get("visitor_name").trim(),
-      location: formData.get("location").trim(),
-      favourite_city: formData.get("favourite_city").trim(),
-      feedback: formData.get("feedback").trim(),
-      timestamp: new Date().toISOString(),
-    };
+  fetch("https://week-4-visitor-guest-book.onrender.com/add", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ formValues }),
+  });
+  form.reset();
+}
 
-    // Validate required fields
-    if (!feedbackData.visitor_name || !feedbackData.feedback) {
-      alert("Name and feedback are required!");
-      return;
-    }
+async function main() {
+  const fb = await getFeedbackFromDB();
 
-    try {
-      // Post the data to the server
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(feedbackData),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log("Feedback submitted successfully:", result);
-
-      // Clear the form
-      form.reset();
-
-      // Update the UI with the new feedback
-      updateFeedbackDisplay(result);
-    } catch (error) {
-      console.error("Error submitting feedback:", error);
-      alert("There was an error submitting your feedback. Please try again.");
-    }
+  fb.forEach(function (entry) {
+    const feedbackContainer = document.querySelector("#innerFB");
+    const feedback = document.createElement("div");
+    feedback.className = "indFB";
+    feedback.textContent = `Visitor Name: ${entry.visitor_name} | Location: ${entry.location} | Favourite City: ${entry.favourite_city} | Feedback: ${entry.feedback}`;
   });
 
-  // Example usage:
-  // This is just for demonstration. In real use, you'd use the actual data from the server response.
-  const exampleFeedback = {
-    id: "123",
-    visitor_name: "John Doe",
-    location: "New York",
-    favourite_city: "Paris",
-    feedback: "Great experience!",
-    timestamp: new Date().toISOString(),
-  };
-
-  updateFeedbackDisplay(exampleFeedback);
-});
+  document
+    .querySelector("#form-container")
+    .addEventListener("submit", handleSubmit);
+}
+main();

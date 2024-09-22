@@ -37,62 +37,39 @@
       <!-- ! remember name attribute -->
       <!-- we need a container to display user feedback -->
       <h1>Please take the time to sign my guest book</h1>
-      <form id="form">
-        <div? id="vistor_data" class="visitorData">
-          <label for="visitor_name">Enter your Name</label>
-          <input
-            type="text"
-            id="visitor_name"
-            name="visitor_name"
-            placeholder="enter name here"
-            maxlength="70"
-            minlength="3"
-            required="required"
-          /><label for="location">Where are you from</label>
-          <input
-            type="text"
-            id="location"
-            name="location"
-            placeholder="Enter your home town"
-            maxlength="35"
-            minlength="3"
-            required="required"
-          />
-          <br />
-          <label for="favourite_city"
-            >What is your favourite city to visit?</label
-          >
-          <input
-            type="text"
-            id="favourite_city"
-            name="favourite_city"
-            placeholder="enter city name here"
-            maxlength="35"
-            minlength="3"
-            required="required"
-          />
-          <br />
-          <label for="textarea">What do you love about it?</label>
-          <textarea
-            id="textarea"
-            name="textarea"
-            placeholder="enter why you love it here"
-            maxlength="500"
-            minlength="25"
-            required="required"
-          ></textarea>
-      </div>
-
-        <button class="button" type="submit">
+      <form id="form-container">
+        <input
+          type="text"
+          name="visitor_name"
+          placeholder="Your Name"
+          required
+        />
+        <input
+          type="text"
+          name="location"
+          placeholder="Your Location"
+          required
+        />
+        <input
+          type="text"
+          name="favourite_city"
+          placeholder="Your Favorite City"
+          required
+        />
+        <textarea
+          name="feedback"
+          placeholder="Your Feedback"
+          required
+        ></textarea>
+        <button type="submit">
           <img
             src="./public/png-transparent-tiger-new-york-city-business-china-sport-submit-button-blue-animals-text-removebg-preview.png"
-            alt="blue submit button"
-            width="150px"
+            alt="submit button"
           />
         </button>
       </form>
       <br />
-      <div id="guestBookContainer" class="guestContainer"></div>
+      <div id="innerFB"></div>
     </main>
     <footer>
       <small> Created by Nicky Mortoza-Cowles 2024 </small><br />
