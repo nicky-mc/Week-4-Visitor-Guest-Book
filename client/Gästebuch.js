@@ -1,14 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
   const guestBookContainer = document.getElementById("guestBookContainer");
   const form = document.getElementById("guestBookForm");
-  const dataUrl =
-    "https://week-4-visitor-guest-book-1.onrender.com/getFeedback";
-  const postUrl =
-    "https://week-4-visitor-guest-book-1.onrender.com/addFeedback";
-  const likeUrl =
-    "https://week-4-visitor-guest-book-1.onrender.com/likeFeedback";
-  const deleteUrl =
-    "https://week-4-visitor-guest-book-1.onrender.com/deleteFeedback";
+  const dataUrl = "https://week-4-visitor-guest-book.onrender.com/getFeedback";
+  const postUrl = "https://week-4-visitor-guest-book.onrender.com/addFeedback";
 
   async function fetchFeedback() {
     try {
@@ -43,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
       button.addEventListener("click", async (event) => {
         const feedbackId = event.target.closest("div").getAttribute("data-id");
         try {
-          const response = await fetch(likeUrl, {
+          const response = await fetch(dataUrl, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -66,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
       button.addEventListener("click", async (event) => {
         const feedbackId = event.target.closest("div").getAttribute("data-id");
         try {
-          const response = await fetch(`${deleteUrl}/${feedbackId}`, {
+          const response = await fetch(`${dataUrl}/${feedbackId}`, {
             method: "DELETE",
           });
           if (response.ok) {
