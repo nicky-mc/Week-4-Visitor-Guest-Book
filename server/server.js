@@ -30,18 +30,6 @@ db.connect((err) => {
   }
 });
 
-// Table structure check
-db.query(
-  "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'feedback'",
-  (err, res) => {
-    if (err) {
-      console.error("Error checking feedback table:", err);
-    } else {
-      console.log("Feedback table structure:", res.rows);
-    }
-  }
-);
-
 // Routes
 app.get("/", (_req, res) => {
   res.json(
@@ -51,7 +39,7 @@ app.get("/", (_req, res) => {
 
 app.get("/feedback", async (_req, res) => {
   try {
-    const result = await db.query("SELECT * FROM feedback");
+    const result = await db.query("SELECT * FROM feedback ORDER BY id DESC");
     res.json(result.rows);
   } catch (error) {
     console.error("Error retrieving feedback:", error);
@@ -64,41 +52,36 @@ app.get("/feedback", async (_req, res) => {
 app.post("/addFeedback", async (req, res) => {
   const { visitor_name, location, favourite_city, feedback } = req.body;
 
+  // Simple data wrangling
+  const wrangle = (str) => (str ? str.trim().substring(0, 255) : "");
+
+  const wrangledData = {
+    visitor_name: wrangle(visitor_name),
+    location: wrangle(location),
+    favourite_city: wrangle(favourite_city),
+    feedback: wrangle(feedback),
+  };
+
   // Basic input validation
-  if (!visitor_name || !location || !favourite_city || !feedback) {
-    return res.status(400).json({ error: "All fields are required" });
+  if (!wrangledData.visitor_name || !wrangledData.feedback) {
+    return res
+      .status(400)
+      .json({ error: "Visitor name and feedback are required" });
   }
 
   try {
     const result = await db.query(
       "INSERT INTO feedback (visitor_name, location, favourite_city, feedback) VALUES ($1, $2, $3, $4) RETURNING *",
-      [visitor_name, location, favourite_city, feedback]
+      [
+        wrangledData.visitor_name,
+        wrangledData.location,
+        wrangledData.favourite_city,
+        wrangledData.feedback,
+      ]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error("Error inserting feedback:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-app.post("/addfeedback", async (req, res) => {
-  const { id } = req.body;
-
-  if (!id) {
-    return res.status(400).json({ error: "Feedback ID is required" });
-  }
-
-  try {
-    const result = await db.query(
-      "UPDATE feedback SET likes = likes + 1 WHERE id = $1 RETURNING *",
-      [id]
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Feedback not found" });
-    }
-    res.json(result.rows[0]);
-  } catch (error) {
-    console.error("Error liking feedback:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
