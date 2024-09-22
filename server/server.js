@@ -2,12 +2,14 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import pg from "pg";
+import path from "path"; // Import path module
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 
+// Set CORS options
 const corsOptions = {
   origin: "https://week4-assignment-guestbook-1.onrender.com", // Your frontend origin
   optionsSuccessStatus: 200, // For legacy browser support
@@ -15,8 +17,12 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// Serve static files from the 'client' directory
+app.use(express.static(path.join(__dirname, "../client"))); // Adjust path as necessary
+
 export const dbConnectionString = process.env.DATABASE_URL;
 
+// Existing GET and POST routes
 app.get("/feedback", async function (req, res) {
   try {
     const queryResponse = await db.query("SELECT * FROM feedback");
