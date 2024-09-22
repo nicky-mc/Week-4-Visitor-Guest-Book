@@ -28,14 +28,16 @@ app.get("/", (_req, res) => {
     "Our server is running on localhost 8080, and we built it on Rock N Roll"
   );
 });
-
 app.get("/getFeedback", async (_req, res) => {
   try {
     const result = await db.query("SELECT * FROM feedback");
     res.json(result.rows);
   } catch (error) {
-    console.error("Error retrieving feedback:", error.message); // Log the error
-    res.status(500).json({ error: "Internal Server Error" }); // Respond with a 500 status
+    console.error("Error retrieving feedback:", error);
+    console.error("Error stack:", error.stack);
+    res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error.message });
   }
 });
 

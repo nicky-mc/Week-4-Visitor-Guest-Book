@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const guestBookContainer = document.getElementById("guestBookContainer");
-  const form = document.getElementById("guestBookForm");
+  const form = document.getElementById("form");
   const dataUrl = "https://week-4-visitor-guest-book.onrender.com/getFeedback";
   const postUrl = "https://week-4-visitor-guest-book.onrender.com/addFeedback";
 
