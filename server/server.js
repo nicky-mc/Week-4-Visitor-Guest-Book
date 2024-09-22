@@ -21,7 +21,25 @@ const dbConnectionString = process.env.DATABASE_URL;
 export const db = new pg.Pool({
   connectionString: dbConnectionString,
 });
+db.connect((err) => {
+  if (err) {
+    console.error("Error connecting to the database:", err);
+  } else {
+    console.log("Successfully connected to the database");
+  }
+});
 
+// Table structure check
+db.query(
+  "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'feedback'",
+  (err, res) => {
+    if (err) {
+      console.error("Error checking feedback table:", err);
+    } else {
+      console.log("Feedback table structure:", res.rows);
+    }
+  }
+);
 // Routes
 app.get("/", (_req, res) => {
   res.json(
