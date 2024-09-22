@@ -39,7 +39,7 @@ app.get("/getFeedback", async (_req, res) => {
       .status(500)
       .json({ error: "Internal Server Error", details: error.message });
   }
-});
+}); // Get all feedback
 
 app.post("/addFeedback", async (req, res) => {
   const { visitor_name, location, favourite_city, feedback } = req.body;
