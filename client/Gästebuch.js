@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Constants
   const API_BASE_URL = "https://week-4-visitor-guest-book.onrender.com";
   const API_ENDPOINTS = {
-    GET_FEEDBACK: `${API_BASE_URL}/`,
+    GET_FEEDBACK: `${API_BASE_URL}/feedback`,
     POST_FEEDBACK: `${API_BASE_URL}/addFeedback/`,
     LIKE_FEEDBACK: `${API_BASE_URL}/addFeedback/`,
     DELETE_FEEDBACK: (id) => `${API_BASE_URL}/${id}`,

@@ -81,7 +81,7 @@ app.post("/addFeedback", async (req, res) => {
   }
 });
 
-app.post("/likeFeedback", async (req, res) => {
+app.post("/addfeedback", async (req, res) => {
   const { id } = req.body;
 
   if (!id) {
