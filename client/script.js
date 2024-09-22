@@ -7,7 +7,7 @@ comment.oninput = function () {
 };
 
 async function getFeedbackFromDB() {
-  const response = await fetch("/api/feedback"); // Fetching feedback from server
+  const response = await fetch("http://your-server-domain/api/feedback"); // Ensure this points to your server
   const data = await response.json();
   return data;
 }
@@ -19,7 +19,8 @@ function handleSubmit(event) {
   const formData = new FormData(form);
   const formValues = Object.fromEntries(formData); // Convert FormData to a plain object
 
-  fetch("/api/addFeedback", {
+  fetch("http://your-server-domain/api/addFeedback", {
+    // Ensure this points to your server
     method: "POST",
     headers: {
       "Content-Type": "application/json",

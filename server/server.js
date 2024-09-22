@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { Pool } from "pg"; // Import Pool from pg
+import { Pool } from "pg"; // Import Pool class from pg
 
 dotenv.config(); // Load environment variables from .env
 
@@ -9,9 +9,9 @@ const app = express();
 app.use(cors()); // Enable CORS for all routes
 app.use(express.json()); // Parse JSON request bodies
 
-// PostgreSQL connection pool
+// Create a PostgreSQL connection pool
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL, // Make sure this is set in your .env file
+  connectionString: process.env.DATABASE_URL, // Ensure this is set in your .env file
 });
 
 // Endpoint to get feedback
@@ -42,7 +42,7 @@ app.post("/api/addFeedback", async (req, res) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 10000; // Use specified port or fallback to 10000
+const PORT = process.env.PORT || 8080; // Use specified port or fallback to 8080
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
