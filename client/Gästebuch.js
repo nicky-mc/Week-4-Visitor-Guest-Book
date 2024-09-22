@@ -1,6 +1,6 @@
 async function getFeedbackFromDB() {
   const response = await fetch(
-    "https://week-4-visitor-guest-book.onrender.com"
+    "https://week-4-visitor-guest-book.onrender.com/"
   );
   const data = await response.json();
   return data;
@@ -13,7 +13,7 @@ function handleSubmit(event) {
   const formData = new FormData(form);
   const formValues = Object.fromEntries(formData);
 
-  fetch("https://week-4-visitor-guest-book.onrender.com/add", {
+  fetch("https://week-4-visitor-guest-book.onrender.com/fedback", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

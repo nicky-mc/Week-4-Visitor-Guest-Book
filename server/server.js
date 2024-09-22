@@ -17,7 +17,7 @@ app.use(cors(corsOptions));
 
 export const dbConnectionString = process.env.DATABASE_URL;
 
-app.get("/", async function (req, res) {
+app.get("/feedback", async function (req, res) {
   try {
     const queryResponse = await db.query("SELECT * FROM feedback");
     res.json(queryResponse.rows);
@@ -27,7 +27,7 @@ app.get("/", async function (req, res) {
   }
 });
 
-app.post("/add", async function (req, res) {
+app.post("/addFeedback", async function (req, res) {
   try {
     const { visitor_name, location, favourite_city, feedback } =
       req.body.formValues;
