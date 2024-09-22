@@ -1,13 +1,14 @@
+const comment = document.getElementById("textarea");
+const heightLimit = 500;
+comment.oninput = function () {
+  comment.style.height = "";
+  comment.style.height = Math.min(comment.scrollHeight, heightLimit) + "px";
+};
+
 async function getFeedbackFromDB() {
   const response = await fetch(
     "https://week-4-visitor-guest-book.onrender.com/Feedback"
   );
-  const comment = document.getElementById("textarea");
-  const heightLimit = 500;
-  comment.oninput = function () {
-    comment.style.height = "";
-    comment.style.height = Math.min(comment.scrollHeight, heightLimit) + "px";
-  };
 
   const data = await response.json();
   return data;
