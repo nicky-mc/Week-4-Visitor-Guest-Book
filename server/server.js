@@ -10,7 +10,7 @@ app.use(express.json());
 
 // CORS configuration
 const corsOptions = {
-  origin: "https://week-4-visitor-guest-book-1.onrender.com", // Your frontend origin
+  origin: "https://week-4-visitor-guest-book-1.onrender.com", // stops CORS errors and allows only this domain but will allow client to access the server
   optionsSuccessStatus: 200, // For legacy browser support
 };
 
