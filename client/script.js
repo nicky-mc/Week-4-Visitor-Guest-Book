@@ -1,54 +1,51 @@
-const comment = document.getElementById("textarea");
-const heightLimit = 500;
-
-comment.oninput = function () {
-  comment.style.height = "";
-  comment.style.height = Math.min(comment.scrollHeight, heightLimit) + "px";
-};
-
-async function getFeedbackFromDB() {
-  const response = await fetch("http://your-server-domain/api/feedback"); // Ensure this points to your server
-  const data = await response.json();
-  return data;
+const getUrl = "https://week-4-visitor-guest-book.onrender.com/feedback";
+const postUrl = "https://week-4-visitor-guest-book.onrender.com/addfeedback";
+const visitorFeedback = document.getElementById("form-container");
+const textArea = document.getElementById("textarea");
+const height = 500;
+const submitButton = document.getElementById("submit");
+async function getFeedback() {
+  try {
+    const response = await fetch(getUrl);
+    const data = await response.json();
+    console.log(data);
+    displayFeedback(data);
+  } catch (error) {
+    console.error("Error fetching feedback:", error);
+  }
 }
-
-function handleSubmit(event) {
-  event.preventDefault(); // Prevent the default form submission
-
-  const form = document.querySelector("#form-container");
-  const formData = new FormData(form);
-  const formValues = Object.fromEntries(formData); // Convert FormData to a plain object
-
-  fetch("http://your-server-domain/api/addFeedback", {
-    // Ensure this points to your server
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(formValues), // Send data as JSON
-  }).then(() => {
-    form.reset(); // Reset the form after submission
-    getFeedbackFromDB().then(displayFeedback); // Reload feedback after submission
+function displayFeedback(data) {
+  visitorFeedback.innerHTML = "";
+  data.forEach((feedback) => {
+    const feedbackElement = document.createElement("innerFB");
+    feedbackElement.classList.add("feedback");
+    feedbackElement.innerHTML = `
+      <h3><strong>${feedback.visitor_name}</strong> from ${feedback.location} says:</h3>
+      <p>My favourite city is ${feedback.favourite_city}</p>
+      <p>${feedback.feedback}</p>`;
+    visitorFeedback.appendChild(feedbackElement);
   });
 }
-
-function displayFeedback(feedbackList) {
-  const feedbackContainer = document.querySelector("#innerFB");
-  feedbackContainer.innerHTML = ""; // Clear existing feedback
-  feedbackList.forEach((entry) => {
-    const feedback = document.createElement("div");
-    feedback.className = "indFB";
-    feedback.textContent = `Visitor Name: ${entry.visitor_name} | Location: ${entry.location} | Favourite City: ${entry.favourite_city} | Feedback: ${entry.feedback}`;
-    feedbackContainer.appendChild(feedback);
-  });
-}
-
-async function main() {
-  const fb = await getFeedbackFromDB(); // Get feedback when the page loads
-  displayFeedback(fb);
-  document
-    .querySelector("#form-container")
-    .addEventListener("submit", handleSubmit); // Attach event listener
-}
-
-main();
+submitButton.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const formData = new FormData(visitorFeedback);
+  const formValues = Object.fromEntries(formData);
+  try {
+    await fetch(postUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formValues),
+    });
+    getFeedback();
+    visitorFeedback.reset();
+  } catch (error) {
+    console.error("Error adding feedback:", error);
+  }
+});
+textArea.addEventListener("input", () => {
+  textArea.style.height = "auto";
+  textArea.style.height = `${Math.min(textArea.scrollHeight, height)}px`;
+});
+getFeedback();

@@ -16,7 +16,7 @@ export const db = new pg.Pool({
 });
 
 // Endpoint to get feedback
-app.get("/api/feedback", async (req, res) => {
+app.get("/feedback", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM feedback");
     res.json(result.rows); // Send feedback data as JSON
@@ -27,7 +27,7 @@ app.get("/api/feedback", async (req, res) => {
 });
 
 // Endpoint to add feedback
-app.post("/api/addFeedback", async (req, res) => {
+app.post("/addfeedback", async (req, res) => {
   const { visitor_name, location, favourite_city, feedback } = req.body; // Extract feedback data from request
 
   try {
