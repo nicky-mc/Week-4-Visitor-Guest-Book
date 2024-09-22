@@ -1,128 +1,107 @@
-// Constants
-const API_BASE_URL = "https://week-4-visitor-guest-book.onrender.com";
-const API_ENDPOINTS = {
-  GET_FEEDBACK: `${API_BASE_URL}/`,
-  POST_FEEDBACK: `${API_BASE_URL}/addFeedback/`,
-  LIKE_FEEDBACK: `${API_BASE_URL}/`,
-  DELETE_FEEDBACK: (id) => `${API_BASE_URL}/${id}`,
-};
+document.addEventListener("DOMContentLoaded", () => {
+  const API_URL = "https://week-4-visitor-guest-book.onrender.com/addFeedback/";
+  const form = document.getElementById("feedbackForm");
 
-// DOM Elements
-const guestBookContainer = document.getElementById("guestBookContainer");
-const form = document.getElementById("form");
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-// Helper Functions
-const createFeedbackElement = (feedback) => {
-  const element = document.createElement("div");
-  element.setAttribute("data-id", feedback.id);
-  element.innerHTML = `
-    <h2>${feedback.visitor_name}</h2>
-    <p>${feedback.location}</p>
-    <p>${feedback.favourite_city}</p>
-    <p>${feedback.feedback}</p>
-    <p>Likes: <span id="likes-${feedback.id}">${feedback.likes || 0}</p>
-    <button class="like-button">Like</button>
-    <button class="delete-button">Delete</button>
-  `;
-  return element;
-};
+    // Gather and format the data
+    const formData = new FormData(form);
+    const feedbackData = {
+      visitor_name: formData.get("visitor_name").trim(),
+      location: formData.get("location").trim(),
+      favourite_city: formData.get("favourite_city").trim(),
+      feedback: formData.get("feedback").trim(),
+      timestamp: new Date().toISOString(),
+    };
 
-const handleApiError = (error, message) => {
-  console.error(`${message}:`, error);
-};
+    // Validate required fields
+    if (!feedbackData.visitor_name || !feedbackData.feedback) {
+      alert("Name and feedback are required!");
+      return;
+    }
 
-// API Functions
-const fetchFeedback = async () => {
-  try {
-    const response = await fetch(API_ENDPOINTS.GET_FEEDBACK);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    const feedbackData = await response.json();
+    try {
+      // Post the data to the server
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(feedbackData),
+      });
 
-    guestBookContainer.innerHTML = "";
-    feedbackData.forEach((feedback) => {
-      guestBookContainer.appendChild(createFeedbackElement(feedback));
-    });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-    attachButtonListeners();
-  } catch (error) {
-    handleApiError(error, "Error fetching feedback");
-  }
-};
+      const result = await response.json();
+      console.log("Feedback submitted successfully:", result);
 
-const submitFeedback = async (formData) => {
-  try {
-    const response = await fetch(API_ENDPOINTS.POST_FEEDBACK, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    await fetchFeedback();
-  } catch (error) {
-    handleApiError(error, "Error submitting feedback");
-  }
-};
+      // Clear the form
+      form.reset();
 
-const likeFeedback = async (feedbackId) => {
-  try {
-    const response = await fetch(API_ENDPOINTS.LIKE_FEEDBACK, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: feedbackId }),
-    });
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    const updatedFeedback = await response.json();
-    document.getElementById(`likes-${updatedFeedback.id}`).innerText =
-      updatedFeedback.likes;
-  } catch (error) {
-    handleApiError(error, "Error liking feedback");
-  }
-};
-
-const deleteFeedback = async (feedbackId) => {
-  try {
-    const response = await fetch(API_ENDPOINTS.DELETE_FEEDBACK(feedbackId), {
-      method: "DELETE",
-    });
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    await fetchFeedback();
-  } catch (error) {
-    handleApiError(error, "Error deleting feedback");
-  }
-};
-
-// Event Listeners
-const attachButtonListeners = () => {
-  document.querySelectorAll(".like-button").forEach((button) => {
-    button.addEventListener("click", (event) => {
-      const feedbackId = event.target.closest("div").getAttribute("data-id");
-      likeFeedback(feedbackId);
-    });
+      // Optionally, you can update the UI to show the new feedback
+      // This depends on how you want to handle the response
+      updateFeedbackDisplay(result);
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
+      alert("There was an error submitting your feedback. Please try again.");
+    }
   });
 
-  document.querySelectorAll(".delete-button").forEach((button) => {
-    button.addEventListener("click", (event) => {
-      const feedbackId = event.target.closest("div").getAttribute("data-id");
-      deleteFeedback(feedbackId);
-    });
-  });
-};
+  function updateFeedbackDisplay(feedback) {
+    // Create a new div element to hold the feedback
+    const feedbackElement = document.createElement("div");
+    feedbackElement.className = "feedback-item";
+    feedbackElement.setAttribute("data-id", feedback.id);
 
-form.addEventListener("submit", (event) => {
-  event.preventDefault();
-  const formData = new FormData(form);
-  const formValues = Object.fromEntries(formData);
-  const trimmedValues = Object.fromEntries(
-    Object.entries(formValues).map(([key, value]) => [key, value.trim()])
-  );
+    // Populate the div with feedback information
+    feedbackElement.innerHTML = `
+      <h3>${feedback.visitor_name}</h3>
+      <p><strong>Location:</strong> ${feedback.location}</p>
+      <p><strong>Favorite City:</strong> ${feedback.favourite_city}</p>
+      <p><strong>Feedback:</strong> ${feedback.feedback}</p>
+      <p><small>Posted on: ${new Date(
+        feedback.timestamp
+      ).toLocaleString()}</small></p>
+      <p>Likes: <span class="likes-count">${feedback.likes || 0}</p>
+      <button class="like-button">Like</button>
+      <button class="delete-button">Delete</button>
+    `;
 
-  if (!trimmedValues.visitor_name || !trimmedValues.feedback) {
-    console.error("Visitor name and feedback are required!");
-    return;
+    // Add event listeners for like and delete buttons
+    const likeButton = feedbackElement.querySelector(".like-button");
+    likeButton.addEventListener("click", () => likeFeedback(feedback.id));
+
+    const deleteButton = feedbackElement.querySelector(".delete-button");
+    deleteButton.addEventListener("click", () => deleteFeedback(feedback.id));
+
+    // Add the new feedback to the guestbook container
+    const guestBookContainer = document.getElementById("guestBookContainer");
+    guestBookContainer.prepend(feedbackElement);
   }
 
-  submitFeedback(trimmedValues);
+  function likeFeedback(feedbackId) {
+    // Implement the like functionality here
+    console.log(`Liking feedback with id: ${feedbackId}`);
+    // You would typically make an API call here to update the like count
+  }
+
+  function deleteFeedback(feedbackId) {
+    // Implement the delete functionality here
+    console.log(`Deleting feedback with id: ${feedbackId}`);
+    // You would typically make an API call here to delete the feedback
+    // Then remove the feedback element from the DOM
+    const feedbackElement = document.querySelector(`[data-id="${feedbackId}"]`);
+    if (feedbackElement) {
+      feedbackElement.remove();
+    }
+  }
+
+  // Make sure this is within your DOMContentLoaded event listener
+  document.addEventListener("DOMContentLoaded", () => {
+    console.log("DOM fully loaded and parsed");
+    updateFeedbackDisplay(newFeedback);
+  });
 });
-
-// Initial fetch
-fetchFeedback();
