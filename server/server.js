@@ -14,33 +14,35 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-// app.options("*", cors(corsOptions));
 
-const dbConnectionString = process.env.DATABASE_URL;
-
-export const db = new pg.Pool({
-  connectionString: dbConnectionString,
-  ssl: { rejectUnauthorized: false },
-});
+export const dbConnectionString = process.env.DATABASE_URL;
 
 app.get("/", async function (req, res) {
-  const queryResponse = await db.query("SELECT * FROM feedback");
-  res.json(queryResponse.rows);
-});
-app.listen(10000, function () {
-  console.log("server is running on port 88 miles an hour on port 10000");
+  try {
+    const queryResponse = await db.query("SELECT * FROM feedback");
+    res.json(queryResponse.rows);
+  } catch (error) {
+    console.error("Error fetching feedback:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
-app.post("/add", function (req, res) {
-  console.log(req.body.formValues.visitor_name);
-
-  app.post("/add", function (req, res) {
+app.post("/add", async function (req, res) {
+  try {
     const { visitor_name, location, favourite_city, feedback } =
       req.body.formValues;
-    db.query(
+    await db.query(
       `INSERT INTO feedback (visitor_name, location, favourite_city, feedback) VALUES ($1,$2,$3,$4)`,
       [visitor_name, location, favourite_city, feedback]
     );
     res.json({ message: "Feedback added successfully" });
-  });
+  } catch (error) {
+    console.error("Error adding feedback:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, function () {
+  console.log(`Server is running on port ${PORT}`);
 });
