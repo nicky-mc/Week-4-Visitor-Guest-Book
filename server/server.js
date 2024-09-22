@@ -10,8 +10,8 @@ app.use(express.json());
 
 // CORS configuration
 const corsOptions = {
-  origin: "https://week-4-visitor-guest-book-1.onrender.com", // stops CORS errors and allows only this domain but will allow client to access the server
-  optionsSuccessStatus: 200, // For legacy browser support
+  origin: "https://week-4-visitor-guest-book-1.onrender.com",
+  optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
@@ -21,6 +21,7 @@ const dbConnectionString = process.env.DATABASE_URL;
 export const db = new pg.Pool({
   connectionString: dbConnectionString,
 });
+
 db.connect((err) => {
   if (err) {
     console.error("Error connecting to the database:", err);
@@ -40,43 +41,53 @@ db.query(
     }
   }
 );
+
 // Routes
 app.get("/", (_req, res) => {
   res.json(
-    "Our server is running on localhost 8080, and we built it on Rock N Roll"
+    "Our server is running on localhost 10000, and we built it on Rock N Roll"
   );
 });
-app.get("/", async (_req, res) => {
+
+app.get("/feedback", async (_req, res) => {
   try {
     const result = await db.query("SELECT * FROM feedback");
     res.json(result.rows);
   } catch (error) {
     console.error("Error retrieving feedback:", error);
-    console.error("Error stack:", error.stack);
     res
       .status(500)
       .json({ error: "Internal Server Error", details: error.message });
   }
-}); // Get all feedback
+});
 
 app.post("/addFeedback", async (req, res) => {
   const { visitor_name, location, favourite_city, feedback } = req.body;
+
+  // Basic input validation
+  if (!visitor_name || !location || !favourite_city || !feedback) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
 
   try {
     const result = await db.query(
       "INSERT INTO feedback (visitor_name, location, favourite_city, feedback) VALUES ($1, $2, $3, $4) RETURNING *",
       [visitor_name, location, favourite_city, feedback]
     );
-    res.status(201).json(result.rows[0]); // Respond with the newly created feedback entry
+    res.status(201).json(result.rows[0]);
   } catch (error) {
-    console.error("Error inserting feedback:", error.message); // Log the error
-    res.status(500).json({ error: "Internal Server Error" }); // Respond with a 500 status
+    console.error("Error inserting feedback:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-// Like feedback
 app.post("/likeFeedback", async (req, res) => {
-  const { id } = req.body; // id of the feedback to like
+  const { id } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ error: "Feedback ID is required" });
+  }
+
   try {
     const result = await db.query(
       "UPDATE feedback SET likes = likes + 1 WHERE id = $1 RETURNING *",
@@ -87,13 +98,13 @@ app.post("/likeFeedback", async (req, res) => {
     }
     res.json(result.rows[0]);
   } catch (error) {
-    console.error("Error liking feedback:", error.message); // Log the error
-    res.status(500).json({ error: "Internal Server Error" }); // Respond with a 500 status
+    console.error("Error liking feedback:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
 // Start the server
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 10000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
