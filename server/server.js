@@ -18,7 +18,7 @@ app.use(cors(corsOptions));
 
 // Database connection
 const dbConnectionString = process.env.DATABASE_URL;
-const db = new pg.Pool({
+export const db = new pg.Pool({
   connectionString: dbConnectionString,
 });
 
