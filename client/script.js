@@ -50,3 +50,4 @@ const getFeedback = () => {
     .catch((err) => console.log(err));
 };
 getFeedback();
+console.log("Hello");
