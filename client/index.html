@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="./favicon-16x16.png" />
@@ -13,84 +13,118 @@
         <h1>Gästebuch</h1>
       </div>
       <div id="header_pictures" class="header_pics">
-        <img src="./san_fran.jpeg" alt="picture of San francisco" class="pic" />
+        <img
+          src="./san_fran.jpeg"
+          alt="Scenic view of San Francisco"
+          class="pic"
+        />
         <img
           src="./oberbaum_bridge.jpeg"
-          alt="a picture of the Oberbaum bridge in berlin"
+          alt="The Oberbaum bridge in Berlin"
           class="pic"
         />
         <img
           src="./windy_welly.jpeg"
-          alt="a picture of Wellington New Zealand"
-          height="183px"
+          alt="Panoramic view of Wellington, New Zealand"
           class="pic"
         />
       </div>
     </header>
     <main>
-      <!--we nned a form in here to Collect user data -->
-      <!-- ! remember name attribute -->
-      <!-- we need a container to display user feedback -->
-      <h1>Please take the time to sign my guest book</h1>
-      <form id="form-container">
-        <input
-          type="text"
-          name="visitor_name"
-          placeholder="Your Name"
-          required
-        />
-        <input
-          type="text"
-          name="location"
-          placeholder="Your Location"
-          required
-        />
-        <input
-          type="text"
-          name="favourite_city"
-          placeholder="Your Favorite City"
-          required
-        />
-        <textarea
-          name="feedback"
-          placeholder="Your Feedback"
-          required
-          id="textarea"
-        ></textarea
-        ><br />
-        <button type="submit" id="submit">
+      <h2>Please take the time to sign my guest book</h2>
+      <form id="form" aria-labelledby="form-title">
+        <h3 id="form-title" class="visually-hidden">Guest Book Entry Form</h3>
+        <div id="vistor_data" class="visitorData">
+          <label for="visitor_name">Enter your Name</label>
+          <input
+            type="text"
+            id="visitor_name"
+            name="visitor_name"
+            placeholder="Enter name here"
+            maxlength="70"
+            minlength="3"
+            required
+            aria-required="true"
+          />
+          <label for="location">Where are you from</label>
+          <input
+            type="text"
+            id="location"
+            name="location"
+            placeholder="Enter your home town"
+            maxlength="35"
+            minlength="3"
+            required
+            aria-required="true"
+          />
+          <label for="favouite_city"
+            >What is your favourite city to visit?</label
+          >
+          <input
+            type="text"
+            id="favouite_city"
+            name="favouite_city"
+            placeholder="Enter city name here"
+            maxlength="35"
+            minlength="3"
+            required
+            aria-required="true"
+          />
+          <label for="textarea">What do you love about it?</label>
+          <textarea
+            id="textarea"
+            name="textarea"
+            placeholder="Enter why you love it here"
+            maxlength="500"
+            minlength="25"
+            required
+            aria-required="true"
+          ></textarea>
+        </div>
+        <button type="submit" id="submit" aria-label="Submit guest book entry">
           <img
             src="./png-transparent-tiger-new-york-city-business-china-sport-submit-button-blue-animals-text-removebg-preview.png"
-            alt="submit button"
-            width="150px"
+            alt="Submit button with tiger image"
+            width="150"
             height="100"
           />
         </button>
       </form>
-      <br />
-      <div id="innerFB"></div>
+      <div id="innerFB" aria-live="polite"></div>
     </main>
     <footer>
-      <small> Created by Nicky Mortoza-Cowles 2024 </small><br />
-      <a href="mailto: d.mortozacowles@gmail.com"
-        ><img src="./email.png" alt="email button" height="80px"
-      /></a>
+      <small>Created by Nicky Mortoza-Cowles 2024</small>
+      <a
+        href="mailto:d.mortozacowles@gmail.com"
+        aria-label="Send email to Nicky Mortoza-Cowles"
+      >
+        <img src="./email.png" alt="Email icon" height="80" width="80" />
+      </a>
       <div class="social-icons">
-        <a href="https://www.instagram.com/cin_azotromselwoc/"
-          ><img
+        <a
+          href="https://www.instagram.com/cin_azotromselwoc/"
+          aria-label="Visit Instagram profile"
+        >
+          <img
             src="./instagram-removebg-preview.png"
-            alt="instagram button"
-            width="150px"
-        /></a>
+            alt="Instagram icon"
+            width="150"
+            height="150"
+          />
+        </a>
         <a
           href="https://www.linkedin.com/in/dominique-mortoza-cowles-23b306160/"
-          ><img
+          aria-label="Visit LinkedIn profile"
+        >
+          <img
             src="./linkedin-removebg-preview.png"
-            alt="linkedin"
-            width="120px"
-        /></a>
+            alt="LinkedIn icon"
+            width="120"
+            height="120"
+          />
+        </a>
       </div>
     </footer>
   </body>
-  <script type="text/javascript" src="./script.js"></script>
+  <script type="text/javascript" src="./public/script.js"></script>
 </html>
