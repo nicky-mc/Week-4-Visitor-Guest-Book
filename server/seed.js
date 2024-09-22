@@ -28,5 +28,3 @@ async function seedDatabase() {
     await db.end(); // Close the database connection
   }
 }
-
-seedDatabase();
