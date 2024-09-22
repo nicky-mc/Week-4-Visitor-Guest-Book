@@ -17,9 +17,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Serve static files from the 'client' directory
-app.use(express.static(path.join(__dirname, "../client"))); // Adjust path as necessary
-
 export const dbConnectionString = process.env.DATABASE_URL;
 
 // Existing GET and POST routes
