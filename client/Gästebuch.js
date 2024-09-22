@@ -1,10 +1,12 @@
 const guestBookContainer = document.getElementById("guestBookContainer");
 const form = document.getElementById("guestBookForm");
-const dataUrl = "https://week-4-visitor-guest-book.onrender.com/getFeedback";
+const dataUrl = "https://week-4-visitor-guest-book-1.onrender.com/getFeedback";
+const postUrl = "https://week-4-visitor-guest-book-1.onrender.com/addFeedback";
 
 async function fetchFeedback() {
   const response = await fetch(dataUrl);
   const feedbackData = await response.json();
+  guestBookContainer.innerHTML = ""; // Clear existing feedback
   feedbackData.forEach((feedback) => {
     const feedbackElement = document.createElement("div");
     feedbackElement.innerHTML = `
@@ -24,14 +26,18 @@ form.addEventListener("submit", async (event) => {
   const formData = new FormData(form);
   const formValues = Object.fromEntries(formData);
   try {
-    const response = await fetch(dataUrl, {
+    const response = await fetch(postUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(formValues),
     });
-    // Handle the response here
+    if (response.ok) {
+      fetchFeedback(); // Refresh the feedback list
+    } else {
+      console.error("Error submitting form:", response.statusText);
+    }
   } catch (error) {
     console.error("Error submitting form:", error);
   }
