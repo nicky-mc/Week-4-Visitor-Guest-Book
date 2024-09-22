@@ -1,4 +1,4 @@
-"python - m http.server";
+"JavaScript - m http.server";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
