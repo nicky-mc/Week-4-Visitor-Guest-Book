@@ -10,24 +10,25 @@ app.use(express.json());
 
 // CORS configuration
 const corsOptions = {
-  origin: "https://your-frontend-url.com", // Update this with your front-end URL
-  optionsSuccessStatus: 200, // For legacy browser support
+  origin: "https://week-4-visitor-guest-book-1.onrender.com/", 
+  optionsSuccessStatus: 200, 
 };
 
 app.use(cors(corsOptions));
 
-// Database connection
+//this is the connection string to connect to the database
 const dbConnectionString = process.env.DATABASE_URL;
+//this connects to seed.js file and creates the table and inserts the dummy data
 export const db = new pg.Pool({
   connectionString: dbConnectionString,
 });
 
-// Define routes
+// this is the connection string to connect to the database
 app.get("/", (_req, res) => {
   res.json("Our server is running!");
 });
 
-// Fetch feedback
+// and now this is the code to get the feedback from the database
 app.get("/getFeedback", async (_req, res) => {
   try {
     const result = await db.query("SELECT * FROM feedback");
@@ -38,11 +39,10 @@ app.get("/getFeedback", async (_req, res) => {
   }
 });
 
-// Add feedback
+// this should be the code to add feedback to the database
 app.post("/addFeedback", async (req, res) => {
   const { visitor_name, location, favourite_city, feedback } = req.body;
-
-  try {
+// and this is the try catch block to insert the feedback into the database
     const result = await db.query(
       "INSERT INTO feedback (visitor_name, location, favourite_city, feedback) VALUES ($1, $2, $3, $4) RETURNING *",
       [visitor_name, location, favourite_city, feedback]
