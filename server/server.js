@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { Pool } from "pg"; // Import Pool class from pg
+import pg from "pg";
 
 dotenv.config(); // Load environment variables from .env
 
@@ -10,8 +10,9 @@ app.use(cors()); // Enable CORS for all routes
 app.use(express.json()); // Parse JSON request bodies
 
 // Create a PostgreSQL connection pool
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL, // Ensure this is set in your .env file
+export const db = new pg.Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
 });
 
 // Endpoint to get feedback
