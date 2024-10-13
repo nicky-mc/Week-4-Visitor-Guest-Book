@@ -1,4 +1,3 @@
-"JavaScript - m http.server";
 document.addEventListener("DOMContentLoaded", () => {
   const getUrl =
     "http://https://week-4-visitor-guest-book.onrender.com/feedback";
