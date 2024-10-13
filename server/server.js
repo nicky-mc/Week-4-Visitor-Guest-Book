@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import pg from "pg";
+import path from "path";
 
 dotenv.config();
 
@@ -15,6 +16,9 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+// Serve static files
+app.use(express.static(path.join(__dirname, "public")));
 
 // Database connection
 const dbConnectionString = process.env.DATABASE_URL;
