@@ -1,8 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const getUrl =
-    "http://https://week-4-visitor-guest-book.onrender.com/feedback";
-  const postUrl =
-    "http://https://week-4-visitor-guest-book.onrender.com/addFeedback";
+  const getUrl = "https://week-4-visitor-guest-book.onrender.com/feedback";
+  const postUrl = "https://week-4-visitor-guest-book.onrender.com/addFeedback";
   const feedbackContainer = document.getElementById("innerFB");
   const formData = document.getElementById("form");
   const textContent = document.getElementById("textarea");
@@ -12,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     textContent.style.height = height + "px";
     textContent.style.height = textContent.scrollHeight + "px";
   });
+
   formData.addEventListener("submit", (e) => {
     e.preventDefault();
     const data = {
@@ -33,6 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .catch((err) => console.log(err));
   });
+
   const getFeedback = () => {
     fetch(getUrl)
       .then((res) => res.json())
@@ -42,9 +42,9 @@ document.addEventListener("DOMContentLoaded", () => {
           const feedbackElement = document.createElement("div");
           feedbackElement.classList.add("feedback");
           feedbackElement.innerHTML = `
-          <h3>${feedback.visitor_name}</h3>,
-          <p>${feedback.location}</p>,
-          <p>${feedback.favourite_city}</p>,
+          <h3>${feedback.visitor_name}</h3>
+          <p>${feedback.location}</p>
+          <p>${feedback.favourite_city}</p>
           <p>${feedback.feedback}</p>
         `;
           feedbackContainer.appendChild(feedbackElement);
@@ -52,6 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .catch((err) => console.log(err));
   };
+
   getFeedback();
   console.log("Hello");
 });
